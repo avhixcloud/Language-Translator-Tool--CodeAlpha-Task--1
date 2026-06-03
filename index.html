@@ -70,7 +70,7 @@
     @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(67,233,123,0.4); } 50% { box-shadow: 0 0 0 6px rgba(67,233,123,0); } }
   </style>
   <link rel="manifest" href="manifest.json" />
-<meta name="theme-color" content="#6c63ff" />
+  <meta name="theme-color" content="#6c63ff" />
 </head>
 <body>
   <div class="container">
@@ -195,9 +195,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    // Multiple free APIs — fallback chain try karta hai ek ke baad ek
     const APIS = [
-      // 1. MyMemory (CORS-friendly, GET request)
       async (text, src, tgt) => {
         const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${src}|${tgt}`;
         const r = await fetch(url);
@@ -207,7 +205,6 @@
         }
         throw new Error('MyMemory failed');
       },
-      // 2. Lingva Translate (open source Google Translate frontend)
       async (text, src, tgt) => {
         const url = `https://lingva.ml/api/v1/${src}/${tgt}/${encodeURIComponent(text)}`;
         const r = await fetch(url);
@@ -215,7 +212,6 @@
         if (d.translation) return d.translation;
         throw new Error('Lingva failed');
       },
-      // 3. LibreTranslate public instance
       async (text, src, tgt) => {
         const r = await fetch('https://libretranslate.com/translate', {
           method: 'POST',
@@ -228,7 +224,6 @@
       }
     ];
 
-    // Short codes for APIs (no region suffix needed for most)
     const LANG_SHORT = {
       en:'en', hi:'hi', fr:'fr', de:'de', es:'es', it:'it', pt:'pt',
       ru:'ru', zh:'zh', ja:'ja', ko:'ko', ar:'ar', tr:'tr', nl:'nl',
@@ -253,6 +248,10 @@
     let translatedText = '';
     let isSpeaking = false;
     let translateTimeout;
+
+    // ✅ FIX: Voices preload karo mobile ke liye
+    window.speechSynthesis.getVoices();
+    speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
 
     inputText.addEventListener('input', () => {
       charCount.textContent = inputText.value.length + ' / 500';
@@ -294,7 +293,6 @@
       let result = null;
       let lastErr = '';
 
-      // Try each API one by one
       for (let i = 0; i < APIS.length; i++) {
         try {
           result = await APIS[i](text, src, tgt);
@@ -370,6 +368,12 @@
       const utter = new SpeechSynthesisUtterance(translatedText);
       utter.lang = targetLang.value;
       utter.rate = 0.95;
+
+      // ✅ FIX: Sahi voice dhundho — Delhi Metro band! 😄
+      const voices = window.speechSynthesis.getVoices();
+      const match = voices.find(v => v.lang.startsWith(targetLang.value));
+      if (match) utter.voice = match;
+
       utter.onend = () => { ttsBtn.classList.remove('speaking'); ttsBtn.innerHTML = '<span>🔊</span> Listen'; isSpeaking = false; };
       window.speechSynthesis.speak(utter);
       ttsBtn.classList.add('speaking');
@@ -383,11 +387,11 @@
       setTimeout(() => toast.classList.remove('show'), 2800);
     }
   </script>
+
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js');
     }
   </script>
-</body>  <!-- yahan band hota hai body -->
 </body>
 </html>
