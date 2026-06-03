@@ -1,8 +1,31 @@
-self.addEventListener('install', (event) => {
-  console.log('PWA Installed');
+const CACHE_NAME = 'translator-v1';
+const ASSETS = [
+  './',
+  './index.html',
+  './manifest.json'
+];
+
+// Install: cache core files
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
+  );
   self.skipWaiting();
 });
 
-self.addEventListener('activate', (event) => {
-  console.log('PWA Activated');
+// Activate: clean old caches
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+    )
+  );
+  self.clients.claim();
+});
+
+// Fetch: network first, fallback to cache
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    fetch(e.request).catch(() => caches.match(e.request))
+  );
 });
