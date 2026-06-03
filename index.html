@@ -69,6 +69,8 @@
     .btn-ghost.speaking { color: var(--accent3); border-color: var(--accent3); animation: pulse 1s infinite; }
     @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(67,233,123,0.4); } 50% { box-shadow: 0 0 0 6px rgba(67,233,123,0); } }
   </style>
+  <link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#6c63ff" />
 </head>
 <body>
   <div class="container">
@@ -381,5 +383,11 @@
       setTimeout(() => toast.classList.remove('show'), 2800);
     }
   </script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js');
+    }
+  </script>
+</body>  <!-- yahan band hota hai body -->
 </body>
 </html>
