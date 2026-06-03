@@ -1,0 +1,10 @@
+{
+  "name": "Language Translator",
+  "short_name": "Translator",
+  "description": "A simple language translator web app",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4f46e5",
+  "icons": []
+}
