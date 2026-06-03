@@ -195,7 +195,29 @@
   <div class="toast" id="toast"></div>
 
   <script>
+    // Language code to full name mapping for Claude prompt
+    const LANG_NAMES = {
+      en:'English', hi:'Hindi', fr:'French', de:'German', es:'Spanish',
+      it:'Italian', pt:'Portuguese', ru:'Russian', zh:'Chinese (Simplified)',
+      ja:'Japanese', ko:'Korean', ar:'Arabic', tr:'Turkish', nl:'Dutch',
+      pl:'Polish', sv:'Swedish', bn:'Bengali', ur:'Urdu', ta:'Tamil',
+      te:'Telugu', mr:'Marathi', gu:'Gujarati', kn:'Kannada', ml:'Malayalam',
+      pa:'Punjabi'
+    };
+
     const APIS = [
+      // Primary: Google Translate — works in all browsers including Edge, no CORS issues
+      async (text, src, tgt) => {
+        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${src}&tl=${tgt}&dt=t&q=${encodeURIComponent(text)}`;
+        const r = await fetch(url);
+        const d = await r.json();
+        if (d && d[0]) {
+          const result = d[0].map(x => x && x[0] ? x[0] : '').join('');
+          if (result) return result;
+        }
+        throw new Error('Google Translate failed');
+      },
+      // Fallback 1: MyMemory
       async (text, src, tgt) => {
         const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${src}|${tgt}`;
         const r = await fetch(url);
@@ -205,13 +227,7 @@
         }
         throw new Error('MyMemory failed');
       },
-      async (text, src, tgt) => {
-        const url = `https://lingva.ml/api/v1/${src}/${tgt}/${encodeURIComponent(text)}`;
-        const r = await fetch(url);
-        const d = await r.json();
-        if (d.translation) return d.translation;
-        throw new Error('Lingva failed');
-      },
+      // Fallback 2: LibreTranslate
       async (text, src, tgt) => {
         const r = await fetch('https://libretranslate.com/translate', {
           method: 'POST',
@@ -230,6 +246,7 @@
       pl:'pl', sv:'sv', bn:'bn', ur:'ur', ta:'ta', te:'te', mr:'mr',
       gu:'gu', kn:'kn', ml:'ml', pa:'pa'
     };
+    // (kept for TTS lang codes)
 
     const inputText    = document.getElementById('inputText');
     const outputText   = document.getElementById('outputText');
@@ -395,3 +412,4 @@
   </script>
 </body>
 </html>
+
