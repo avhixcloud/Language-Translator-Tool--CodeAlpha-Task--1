@@ -628,29 +628,70 @@
 
     let translatedText = '';
     let isSpeaking = false;
+    let translateTimeout;
 
     inputText.addEventListener('input', () => {
       charCount.textContent = inputText.value.length + ' / 500';
+
+      clearTimeout(translateTimeout);
+
+      if (!inputText.value.trim()) {
+        outputText.innerHTML =
+          '<span class="output-placeholder">Translation will appear here...</span>';
+        translatedText = '';
+        return;
+      }
+
+      translateTimeout = setTimeout(() => {
+        translate();
+      }, 500);
     });
 
     translateBtn.addEventListener('click', translate);
-    inputText.addEventListener('keydown', e => { if (e.ctrlKey && e.key === 'Enter') translate(); });
+
+    inputText.addEventListener('keydown', e => {
+      if (e.ctrlKey && e.key === 'Enter') translate();
+    });
+
+    sourceLang.addEventListener('change', () => {
+      if (inputText.value.trim()) translate();
+    });
+
+    targetLang.addEventListener('change', () => {
+      if (inputText.value.trim()) translate();
+    });
 
     async function translate() {
       const text = inputText.value.trim();
-      if (!text) { showToast('Please enter some text first!'); return; }
 
-      const src = sourceLang.value === 'auto' ? 'autodetect' : sourceLang.value;
+      if (!text) {
+        outputText.innerHTML =
+          '<span class="output-placeholder">Translation will appear here...</span>';
+        return;
+      }
+
+      const src = sourceLang.value === 'auto'
+        ? 'autodetect'
+        : sourceLang.value;
+
       const tgt = targetLang.value;
 
       outputText.innerHTML = '';
       spinner.classList.add('active');
       outputText.appendChild(spinner);
+
       translateBtn.disabled = true;
       translateBtn.innerHTML = '<span>⏳</span> Translating...';
 
       try {
-        const url = 'https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) + '&langpair=' + src + '|' + tgt;
+        const url =
+          'https://api.mymemory.translated.net/get?q=' +
+          encodeURIComponent(text) +
+          '&langpair=' +
+          src +
+          '|' +
+          tgt;
+
         const res = await fetch(url);
         const data = await res.json();
 
@@ -659,85 +700,156 @@
 
         if (data.responseStatus === 200) {
           translatedText = data.responseData.translatedText;
+
           const p = document.createElement('p');
-          p.style.cssText = 'animation: fadeUp 0.4s ease both; line-height:1.7;';
+          p.style.cssText =
+            'animation: fadeUp 0.4s ease both; line-height:1.7;';
           p.textContent = translatedText;
+
           outputText.appendChild(p);
         } else {
-          throw new Error(data.responseDetails || 'Translation failed');
+          throw new Error(
+            data.responseDetails || 'Translation failed'
+          );
         }
       } catch (err) {
         spinner.classList.remove('active');
-        outputText.innerHTML = '<span style="color:var(--accent2)">Error: ' + (err.message || 'Something went wrong') + '</span>';
+
+        outputText.innerHTML =
+          '<span style="color:var(--accent2)">Error: ' +
+          (err.message || 'Something went wrong') +
+          '</span>';
+
         translatedText = '';
       }
 
       translateBtn.disabled = false;
-      translateBtn.innerHTML = '<span>⚡</span> Translate';
+      translateBtn.innerHTML =
+        '<span>⚡</span> Translate';
     }
 
     swapBtn.addEventListener('click', () => {
       const srcVal = sourceLang.value;
-      if (srcVal === 'auto') { showToast('Cannot swap when Auto Detect is selected'); return; }
+
+      if (srcVal === 'auto') {
+        showToast(
+          'Cannot swap when Auto Detect is selected'
+        );
+        return;
+      }
+
       const tgtVal = targetLang.value;
+
       sourceLang.value = tgtVal;
       targetLang.value = srcVal;
+
       if (translatedText) {
         inputText.value = translatedText;
-        charCount.textContent = inputText.value.length + ' / 500';
-        outputText.innerHTML = '<span class="output-placeholder">Hit Translate again ↑</span>';
-        translatedText = '';
+        charCount.textContent =
+          inputText.value.length + ' / 500';
       }
+
+      setTimeout(() => {
+        if (inputText.value.trim()) {
+          translate();
+        }
+      }, 200);
     });
 
     clearBtn.addEventListener('click', () => {
       inputText.value = '';
       charCount.textContent = '0 / 500';
-      outputText.innerHTML = '<span class="output-placeholder">Translation will appear here...</span>';
+
+      outputText.innerHTML =
+        '<span class="output-placeholder">Translation will appear here...</span>';
+
       translatedText = '';
-      if (window.speechSynthesis) window.speechSynthesis.cancel();
+
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+
       ttsBtn.classList.remove('speaking');
-      ttsBtn.innerHTML = '<span>🔊</span> Listen';
+      ttsBtn.innerHTML =
+        '<span>🔊</span> Listen';
+
       isSpeaking = false;
     });
 
     copyBtn.addEventListener('click', () => {
-      if (!translatedText) { showToast('Nothing to copy yet!'); return; }
-      navigator.clipboard.writeText(translatedText).then(() => {
-        copySuccess.classList.add('show');
-        setTimeout(() => copySuccess.classList.remove('show'), 2000);
-        showToast('Copied to clipboard!');
-      });
+      if (!translatedText) {
+        showToast('Nothing to copy yet!');
+        return;
+      }
+
+      navigator.clipboard
+        .writeText(translatedText)
+        .then(() => {
+          copySuccess.classList.add('show');
+
+          setTimeout(() => {
+            copySuccess.classList.remove('show');
+          }, 2000);
+
+          showToast('Copied to clipboard!');
+        });
     });
 
     ttsBtn.addEventListener('click', () => {
-      if (!translatedText) { showToast('No translation to speak!'); return; }
-      if (!('speechSynthesis' in window)) { showToast('TTS not supported in this browser'); return; }
+      if (!translatedText) {
+        showToast('No translation to speak!');
+        return;
+      }
+
+      if (!('speechSynthesis' in window)) {
+        showToast(
+          'TTS not supported in this browser'
+        );
+        return;
+      }
+
       if (isSpeaking) {
         window.speechSynthesis.cancel();
+
         ttsBtn.classList.remove('speaking');
-        ttsBtn.innerHTML = '<span>🔊</span> Listen';
+        ttsBtn.innerHTML =
+          '<span>🔊</span> Listen';
+
         isSpeaking = false;
         return;
       }
-      const utter = new SpeechSynthesisUtterance(translatedText);
+
+      const utter =
+        new SpeechSynthesisUtterance(
+          translatedText
+        );
+
       utter.lang = targetLang.value;
       utter.rate = 0.95;
+
       utter.onend = () => {
         ttsBtn.classList.remove('speaking');
-        ttsBtn.innerHTML = '<span>🔊</span> Listen';
+        ttsBtn.innerHTML =
+          '<span>🔊</span> Listen';
         isSpeaking = false;
       };
+
       window.speechSynthesis.speak(utter);
+
       ttsBtn.classList.add('speaking');
-      ttsBtn.innerHTML = '<span>⏹</span> Stop';
+      ttsBtn.innerHTML =
+        '<span>⏹</span> Stop';
+
       isSpeaking = true;
     });
 
     function showToast(msg) {
       toast.textContent = msg;
       toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 2800);
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2800);
     }
   </script>
 </body>
