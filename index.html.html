@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Code Alpha Task 1</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --surface2: #1c1c27;
+      --border: #2a2a3d;
+      --accent: #6c63ff;
+      --accent2: #ff6584;
+      --accent3: #43e97b;
+      --text: #e8e8f0;
+      --muted: #7a7a95;
+      --glow: rgba(108, 99, 255, 0.25);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 20%, rgba(108, 99, 255, 0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 80% 80%, rgba(255, 101, 132, 0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 60% 10%, rgba(67, 233, 123, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 40px 20px 60px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 48px;
+      animation: fadeDown 0.7s ease both;
+    }
+
+    .logo-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+
+    .logo-pill span {
+      font-size: 16px;
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.2rem, 6vw, 3.8rem);
+      font-weight: 800;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #fff 30%, var(--accent) 70%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 1rem;
+      font-weight: 300;
+    }
+
+    .translator-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 0 60px var(--glow), 0 20px 60px rgba(0, 0, 0, 0.4);
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    .lang-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 20px 24px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .lang-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      min-width: 140px;
+    }
+
+    .lang-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a7a95' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+    }
+
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--glow);
+    }
+
+    .swap-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: all 0.3s;
+      flex-shrink: 0;
+      margin-top: 18px;
+    }
+
+    .swap-btn:hover {
+      background: var(--accent);
+      color: white;
+      transform: rotate(180deg);
+      box-shadow: 0 0 20px var(--glow);
+    }
+
+    .panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 280px;
+    }
+
+    @media (max-width: 600px) {
+      .panels {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .panel:first-child {
+      border-right: 1px solid var(--border);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--muted);
+    }
+
+    .char-count {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    textarea {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      resize: none;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 300;
+      line-height: 1.7;
+      padding: 20px;
+      min-height: 220px;
+    }
+
+    textarea::placeholder {
+      color: var(--muted);
+    }
+
+    .output-text {
+      flex: 1;
+      padding: 20px;
+      font-size: 1rem;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--text);
+      min-height: 220px;
+      position: relative;
+    }
+
+    .output-placeholder {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .spinner {
+      display: none;
+      width: 28px;
+      height: 28px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .spinner.active {
+      display: block;
+    }
+
+    .action-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      background: var(--surface2);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 18px;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 4px 20px rgba(108, 99, 255, 0.4);
+    }
+
+    .btn-primary:hover {
+      background: #7d75ff;
+      box-shadow: 0 4px 28px rgba(108, 99, 255, 0.6);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      color: var(--text);
+      border-color: var(--accent);
+      background: var(--glow);
+    }
+
+    .btn-danger {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .btn-danger:hover {
+      color: var(--accent2);
+      border-color: var(--accent2);
+    }
+
+    .copy-success {
+      font-size: 11px;
+      color: var(--accent3);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .copy-success.show {
+      opacity: 1;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 48px;
+      animation: fadeUp 0.8s 0.5s ease both;
+    }
+
+    .built-by {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .built-by strong {
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s;
+      background: var(--surface);
+    }
+
+    .social-link:hover {
+      color: var(--text);
+      border-color: var(--accent);
+      background: var(--surface2);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px var(--glow);
+    }
+
+    .social-link svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--surface2);
+      border: 1px solid var(--accent);
+      color: var(--text);
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 14px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 999;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @keyframes fadeDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes spin {
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+
+    .btn-ghost.speaking {
+      color: var(--accent3);
+      border-color: var(--accent3);
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 rgba(67, 233, 123, 0.4);
+      }
+
+      50% {
+        box-shadow: 0 0 0 6px rgba(67, 233, 123, 0);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <div class="logo-pill"><span>🌐</span> Language App</div>
+      <h1>Code Alpha Task 1</h1>
+      <p class="subtitle">Language Translation Tool - Code Alpha Internship Task 1</p>
+    </header>
+
+    <div class="translator-card">
+      <div class="lang-bar">
+        <div class="lang-group">
+          <span class="lang-label">Source Language</span>
+          <select id="sourceLang">
+            <option value="auto">🔍 Auto Detect</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="hi">🇮🇳 Hindi</option>
+            <option value="fr">🇫🇷 French</option>
+            <option value="de">🇩🇪 German</option>
+            <option value="es">🇪🇸 Spanish</option>
+            <option value="it">🇮🇹 Italian</option>
+            <option value="pt">🇵🇹 Portuguese</option>
+            <option value="ru">🇷🇺 Russian</option>
+            <option value="zh">🇨🇳 Chinese</option>
+            <option value="ja">🇯🇵 Japanese</option>
+            <option value="ko">🇰🇷 Korean</option>
+            <option value="ar">🇸🇦 Arabic</option>
+            <option value="tr">🇹🇷 Turkish</option>
+            <option value="nl">🇳🇱 Dutch</option>
+            <option value="pl">🇵🇱 Polish</option>
+            <option value="sv">🇸🇪 Swedish</option>
+            <option value="bn">🇧🇩 Bengali</option>
+            <option value="ur">🇵🇰 Urdu</option>
+            <option value="ta">🇮🇳 Tamil</option>
+            <option value="te">🇮🇳 Telugu</option>
+            <option value="mr">🇮🇳 Marathi</option>
+            <option value="gu">🇮🇳 Gujarati</option>
+            <option value="kn">🇮🇳 Kannada</option>
+            <option value="ml">🇮🇳 Malayalam</option>
+            <option value="pa">🇮🇳 Punjabi</option>
+          </select>
+        </div>
+        <button class="swap-btn" id="swapBtn" title="Swap Languages">⇄</button>
+        <div class="lang-group">
+          <span class="lang-label">Target Language</span>
+          <select id="targetLang">
+            <option value="hi">🇮🇳 Hindi</option>
+            <option value="en" selected>🇬🇧 English</option>
+            <option value="fr">🇫🇷 French</option>
+            <option value="de">🇩🇪 German</option>
+            <option value="es">🇪🇸 Spanish</option>
+            <option value="it">🇮🇹 Italian</option>
+            <option value="pt">🇵🇹 Portuguese</option>
+            <option value="ru">🇷🇺 Russian</option>
+            <option value="zh">🇨🇳 Chinese</option>
+            <option value="ja">🇯🇵 Japanese</option>
+            <option value="ko">🇰🇷 Korean</option>
+            <option value="ar">🇸🇦 Arabic</option>
+            <option value="tr">🇹🇷 Turkish</option>
+            <option value="nl">🇳🇱 Dutch</option>
+            <option value="pl">🇵🇱 Polish</option>
+            <option value="sv">🇸🇪 Swedish</option>
+            <option value="bn">🇧🇩 Bengali</option>
+            <option value="ur">🇵🇰 Urdu</option>
+            <option value="ta">🇮🇳 Tamil</option>
+            <option value="te">🇮🇳 Telugu</option>
+            <option value="mr">🇮🇳 Marathi</option>
+            <option value="gu">🇮🇳 Gujarati</option>
+            <option value="kn">🇮🇳 Kannada</option>
+            <option value="ml">🇮🇳 Malayalam</option>
+            <option value="pa">🇮🇳 Punjabi</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="panels">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Input Text</span>
+            <span class="char-count" id="charCount">0 / 500</span>
+          </div>
+          <textarea id="inputText" placeholder="Type or paste text here... (Ctrl+Enter to translate)" maxlength="500"
+            spellcheck="false"></textarea>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Translation</span>
+            <span class="copy-success" id="copySuccess">✓ Copied!</span>
+          </div>
+          <div class="output-text" id="outputText">
+            <span class="output-placeholder">Translation will appear here...</span>
+            <div class="spinner" id="spinner"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <div class="btn-group">
+          <button class="btn btn-primary" id="translateBtn"><span>⚡</span> Translate</button>
+          <button class="btn btn-danger" id="clearBtn"><span>✕</span> Clear</button>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-ghost" id="copyBtn"><span>⎘</span> Copy</button>
+          <button class="btn btn-ghost" id="ttsBtn"><span>🔊</span> Listen</button>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p class="built-by">Built with ❤️ by <strong>Abhishek</strong></p>
+      <div class="social-links">
+        <a href="https://github.com/avhixcloud" target="_blank" class="social-link">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .11-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 013-.4c1.02.01 2.04.14 3 .4 2.29-1.55 3.29-1.23 3.29-1.23.66 1.66.25 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.63-5.49 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z" />
+          </svg>
+          GitHub — avhixcloud
+        </a>
+        <a href="https://www.linkedin.com/in/abhishek-pal-1b65a6354/" target="_blank" class="social-link">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 110-4.12 2.06 2.06 0 010 4.12zM3.56 20.45h3.55V9H3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45C23.21 24 24 23.23 24 22.28V1.72C24 .77 23.21 0 22.22 0z" />
+          </svg>
+          LinkedIn Profile
+        </a>
+      </div>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const inputText = document.getElementById('inputText');
+    const outputText = document.getElementById('outputText');
+    const sourceLang = document.getElementById('sourceLang');
+    const targetLang = document.getElementById('targetLang');
+    const translateBtn = document.getElementById('translateBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const ttsBtn = document.getElementById('ttsBtn');
+    const swapBtn = document.getElementById('swapBtn');
+    const spinner = document.getElementById('spinner');
+    const charCount = document.getElementById('charCount');
+    const copySuccess = document.getElementById('copySuccess');
+    const toast = document.getElementById('toast');
+
+    let translatedText = '';
+    let isSpeaking = false;
+
+    inputText.addEventListener('input', () => {
+      charCount.textContent = inputText.value.length + ' / 500';
+    });
+
+    translateBtn.addEventListener('click', translate);
+    inputText.addEventListener('keydown', e => { if (e.ctrlKey && e.key === 'Enter') translate(); });
+
+    async function translate() {
+      const text = inputText.value.trim();
+      if (!text) { showToast('Please enter some text first!'); return; }
+
+      const src = sourceLang.value === 'auto' ? 'autodetect' : sourceLang.value;
+      const tgt = targetLang.value;
+
+      outputText.innerHTML = '';
+      spinner.classList.add('active');
+      outputText.appendChild(spinner);
+      translateBtn.disabled = true;
+      translateBtn.innerHTML = '<span>⏳</span> Translating...';
+
+      try {
+        const url = 'https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) + '&langpair=' + src + '|' + tgt;
+        const res = await fetch(url);
+        const data = await res.json();
+
+        spinner.classList.remove('active');
+        outputText.innerHTML = '';
+
+        if (data.responseStatus === 200) {
+          translatedText = data.responseData.translatedText;
+          const p = document.createElement('p');
+          p.style.cssText = 'animation: fadeUp 0.4s ease both; line-height:1.7;';
+          p.textContent = translatedText;
+          outputText.appendChild(p);
+        } else {
+          throw new Error(data.responseDetails || 'Translation failed');
+        }
+      } catch (err) {
+        spinner.classList.remove('active');
+        outputText.innerHTML = '<span style="color:var(--accent2)">Error: ' + (err.message || 'Something went wrong') + '</span>';
+        translatedText = '';
+      }
+
+      translateBtn.disabled = false;
+      translateBtn.innerHTML = '<span>⚡</span> Translate';
+    }
+
+    swapBtn.addEventListener('click', () => {
+      const srcVal = sourceLang.value;
+      if (srcVal === 'auto') { showToast('Cannot swap when Auto Detect is selected'); return; }
+      const tgtVal = targetLang.value;
+      sourceLang.value = tgtVal;
+      targetLang.value = srcVal;
+      if (translatedText) {
+        inputText.value = translatedText;
+        charCount.textContent = inputText.value.length + ' / 500';
+        outputText.innerHTML = '<span class="output-placeholder">Hit Translate again ↑</span>';
+        translatedText = '';
+      }
+    });
+
+    clearBtn.addEventListener('click', () => {
+      inputText.value = '';
+      charCount.textContent = '0 / 500';
+      outputText.innerHTML = '<span class="output-placeholder">Translation will appear here...</span>';
+      translatedText = '';
+      if (window.speechSynthesis) window.speechSynthesis.cancel();
+      ttsBtn.classList.remove('speaking');
+      ttsBtn.innerHTML = '<span>🔊</span> Listen';
+      isSpeaking = false;
+    });
+
+    copyBtn.addEventListener('click', () => {
+      if (!translatedText) { showToast('Nothing to copy yet!'); return; }
+      navigator.clipboard.writeText(translatedText).then(() => {
+        copySuccess.classList.add('show');
+        setTimeout(() => copySuccess.classList.remove('show'), 2000);
+        showToast('Copied to clipboard!');
+      });
+    });
+
+    ttsBtn.addEventListener('click', () => {
+      if (!translatedText) { showToast('No translation to speak!'); return; }
+      if (!('speechSynthesis' in window)) { showToast('TTS not supported in this browser'); return; }
+      if (isSpeaking) {
+        window.speechSynthesis.cancel();
+        ttsBtn.classList.remove('speaking');
+        ttsBtn.innerHTML = '<span>🔊</span> Listen';
+        isSpeaking = false;
+        return;
+      }
+      const utter = new SpeechSynthesisUtterance(translatedText);
+      utter.lang = targetLang.value;
+      utter.rate = 0.95;
+      utter.onend = () => {
+        ttsBtn.classList.remove('speaking');
+        ttsBtn.innerHTML = '<span>🔊</span> Listen';
+        isSpeaking = false;
+      };
+      window.speechSynthesis.speak(utter);
+      ttsBtn.classList.add('speaking');
+      ttsBtn.innerHTML = '<span>⏹</span> Stop';
+      isSpeaking = true;
+    });
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2800);
+    }
+  </script>
+</body>
+
+</html>
